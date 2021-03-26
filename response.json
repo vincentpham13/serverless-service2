@@ -1,0 +1,1 @@
+{"errorType":"TypeError","errorMessage":"Cannot read property 'forEach' of undefined","trace":["TypeError: Cannot read property 'forEach' of undefined","    at Runtime.module.exports.getDynamoItem [as handler] (/var/task/handler.js:69:17)","    at Runtime.handleOnce (/var/runtime/Runtime.js:66:25)"]}
