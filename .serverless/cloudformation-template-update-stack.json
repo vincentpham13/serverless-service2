@@ -71,16 +71,10 @@
         }
       }
     },
-    "PutDynamoItemLogGroup": {
+    "ConsumeQueueMessageLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/serverless-test-dev-putDynamoItem"
-      }
-    },
-    "GetDynamoItemLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "LogGroupName": "/aws/lambda/serverless-test-dev-getDynamoItem"
+        "LogGroupName": "/aws/lambda/serverless-service2-test-dev-consumeQueueMessage"
       }
     },
     "IamRoleLambdaExecution": {
@@ -108,7 +102,7 @@
               "Fn::Join": [
                 "-",
                 [
-                  "serverless-test",
+                  "serverless-service2-test",
                   "dev",
                   "lambda"
                 ]
@@ -125,7 +119,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/serverless-test-dev*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/serverless-service2-test-dev*:*"
                     }
                   ]
                 },
@@ -136,7 +130,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/serverless-test-dev*:*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/serverless-service2-test-dev*:*:*"
                     }
                   ]
                 }
@@ -149,7 +143,7 @@
           "Fn::Join": [
             "-",
             [
-              "serverless-test",
+              "serverless-service2-test",
               "dev",
               {
                 "Ref": "AWS::Region"
@@ -160,18 +154,18 @@
         }
       }
     },
-    "PutDynamoItemLambdaFunction": {
+    "ConsumeQueueMessageLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-test/dev/1616743720646-2021-03-26T07:28:40.646Z/serverless-test.zip"
+          "S3Key": "serverless/serverless-service2-test/dev/1616748060396-2021-03-26T08:41:00.396Z/serverless-service2-test.zip"
         },
-        "Handler": "handler.putDynamoItem",
+        "Handler": "handler.consumeQueueMessage",
         "Runtime": "nodejs12.x",
-        "FunctionName": "serverless-test-dev-putDynamoItem",
+        "FunctionName": "serverless-service2-test-dev-consumeQueueMessage",
         "MemorySize": 1024,
         "Timeout": 6,
         "Role": {
@@ -182,148 +176,18 @@
         }
       },
       "DependsOn": [
-        "PutDynamoItemLogGroup"
+        "ConsumeQueueMessageLogGroup"
       ]
     },
-    "GetDynamoItemLambdaFunction": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "ServerlessDeploymentBucket"
-          },
-          "S3Key": "serverless/serverless-test/dev/1616743720646-2021-03-26T07:28:40.646Z/serverless-test.zip"
-        },
-        "Handler": "handler.getDynamoItem",
-        "Runtime": "nodejs12.x",
-        "FunctionName": "serverless-test-dev-getDynamoItem",
-        "MemorySize": 1024,
-        "Timeout": 6,
-        "Role": {
-          "Fn::GetAtt": [
-            "IamRoleLambdaExecution",
-            "Arn"
-          ]
-        }
-      },
-      "DependsOn": [
-        "GetDynamoItemLogGroup"
-      ]
-    },
-    "PutDynamoItemLambdaVersionSyimroNX0sZdAWvsyl5kK8iVsmsdqGQI2O1iztjZY0": {
+    "ConsumeQueueMessageLambdaVersion9AHWonpUMJfDN4YnIrqg9ihBHa2BGSEGOAK7x8Jnc": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
-          "Ref": "PutDynamoItemLambdaFunction"
+          "Ref": "ConsumeQueueMessageLambdaFunction"
         },
-        "CodeSha256": "qFqC0tzyWLTOYj+Wt8rGjDZDeq1OCF+g0ydsZToheX8="
+        "CodeSha256": "Jr4mKuPWeVufnmzayDp0xy6XWJrQYOvA6rsrmHqzzEQ="
       }
-    },
-    "GetDynamoItemLambdaVersionv1EFJpPAPbFso5LehikntFowG3A27xmO99mtse7UUE": {
-      "Type": "AWS::Lambda::Version",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "FunctionName": {
-          "Ref": "GetDynamoItemLambdaFunction"
-        },
-        "CodeSha256": "qFqC0tzyWLTOYj+Wt8rGjDZDeq1OCF+g0ydsZToheX8="
-      }
-    },
-    "HttpApi": {
-      "Type": "AWS::ApiGatewayV2::Api",
-      "Properties": {
-        "Name": "dev-serverless-test",
-        "ProtocolType": "HTTP"
-      }
-    },
-    "HttpApiStage": {
-      "Type": "AWS::ApiGatewayV2::Stage",
-      "Properties": {
-        "ApiId": {
-          "Ref": "HttpApi"
-        },
-        "StageName": "$default",
-        "AutoDeploy": true,
-        "DefaultRouteSettings": {
-          "DetailedMetricsEnabled": false
-        }
-      }
-    },
-    "PutDynamoItemLambdaPermissionHttpApi": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "PutDynamoItemLambdaFunction",
-            "Arn"
-          ]
-        },
-        "Action": "lambda:InvokeFunction",
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":",
-              {
-                "Ref": "HttpApi"
-              },
-              "/*"
-            ]
-          ]
-        }
-      }
-    },
-    "HttpApiIntegrationPutDynamoItem": {
-      "Type": "AWS::ApiGatewayV2::Integration",
-      "Properties": {
-        "ApiId": {
-          "Ref": "HttpApi"
-        },
-        "IntegrationType": "AWS_PROXY",
-        "IntegrationUri": {
-          "Fn::GetAtt": [
-            "PutDynamoItemLambdaFunction",
-            "Arn"
-          ]
-        },
-        "PayloadFormatVersion": "2.0",
-        "TimeoutInMillis": 6500
-      }
-    },
-    "HttpApiRouteGetTrigger": {
-      "Type": "AWS::ApiGatewayV2::Route",
-      "Properties": {
-        "ApiId": {
-          "Ref": "HttpApi"
-        },
-        "RouteKey": "GET /trigger",
-        "Target": {
-          "Fn::Join": [
-            "/",
-            [
-              "integrations",
-              {
-                "Ref": "HttpApiIntegrationPutDynamoItem"
-              }
-            ]
-          ]
-        }
-      },
-      "DependsOn": "HttpApiIntegrationPutDynamoItem"
     }
   },
   "Outputs": {
@@ -332,44 +196,10 @@
         "Ref": "ServerlessDeploymentBucket"
       }
     },
-    "PutDynamoItemLambdaFunctionQualifiedArn": {
+    "ConsumeQueueMessageLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "PutDynamoItemLambdaVersionSyimroNX0sZdAWvsyl5kK8iVsmsdqGQI2O1iztjZY0"
-      }
-    },
-    "GetDynamoItemLambdaFunctionQualifiedArn": {
-      "Description": "Current Lambda function version",
-      "Value": {
-        "Ref": "GetDynamoItemLambdaVersionv1EFJpPAPbFso5LehikntFowG3A27xmO99mtse7UUE"
-      }
-    },
-    "HttpApiId": {
-      "Description": "Id of the HTTP API",
-      "Value": {
-        "Ref": "HttpApi"
-      }
-    },
-    "HttpApiUrl": {
-      "Description": "URL of the HTTP API",
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "https://",
-            {
-              "Ref": "HttpApi"
-            },
-            ".execute-api.",
-            {
-              "Ref": "AWS::Region"
-            },
-            ".",
-            {
-              "Ref": "AWS::URLSuffix"
-            }
-          ]
-        ]
+        "Ref": "ConsumeQueueMessageLambdaVersion9AHWonpUMJfDN4YnIrqg9ihBHa2BGSEGOAK7x8Jnc"
       }
     }
   }
