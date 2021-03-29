@@ -7,13 +7,17 @@ AWS.config.update({
 });
 
 const ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' })
-const TABLE_NAME = 'db-service-2';
+const TABLE_NAME = process.env.tableName;
 
 const params = {
   TableName: TABLE_NAME,
   Item: {},
 }
 
+
+module.exports.subscribeToSNS = async (event) => {
+  
+}
 
 module.exports.consumeQueueMessage = async (event) => {
   let consumedMessage = null;
@@ -42,35 +46,3 @@ module.exports.consumeQueueMessage = async (event) => {
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration
   // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
 };
-
-// // Call DynamoDB to add the item to the table 
-// const result = await new Promise((resolve, reject) => {
-//   ddb.putItem(params, function (error, data) {
-//     if (error) {
-//       console.log("🚀 ~ file: handler.js ~ line 26 ~ ddb.putItem ~ error", error);
-//       resolve({
-//         statusCode: 500,
-//         body: JSON.stringify(
-//           {
-//             message: 'There was an error during saving the message to data service 1.',
-//             stack: error,
-//           },
-//           null,
-//           2
-//         ),
-//       });
-//     } else {
-//       console.log("🚀 ~ file: handler.js ~ line 25 ~ data", data)
-//       resolve({
-//         statusCode: 200,
-//         body: JSON.stringify(
-//           {
-//             message: params.Item.MESSAGE,
-//           },
-//           null,
-//           2
-//         ),
-//       });
-//     }
-//   });
-// });

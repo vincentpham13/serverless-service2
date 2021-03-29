@@ -74,7 +74,7 @@
     "ConsumeQueueMessageLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/serverless-service2-test-dev-consumeQueueMessage"
+        "LogGroupName": "/aws/lambda/serverless-service2-api-dev-consumeQueueMessage"
       }
     },
     "IamRoleLambdaExecution": {
@@ -102,7 +102,7 @@
               "Fn::Join": [
                 "-",
                 [
-                  "serverless-service2-test",
+                  "serverless-service2-api",
                   "dev",
                   "lambda"
                 ]
@@ -119,7 +119,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/serverless-service2-test-dev*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/serverless-service2-api-dev*:*"
                     }
                   ]
                 },
@@ -130,8 +130,33 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/serverless-service2-test-dev*:*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/serverless-service2-api-dev*:*:*"
                     }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ssm:GetParameter"
+                  ],
+                  "Resource": "arn:aws:ssm:us-east-1:653332051596:parameter/*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "sns:Subscribe"
+                  ],
+                  "Resource": "arn:aws:sns:us-east-1:653332051596:service1-topic"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "sqs:ReceiveMessage",
+                    "sqs:DeleteMessage",
+                    "sqs:GetQueueAttributes"
+                  ],
+                  "Resource": [
+                    "arn:aws:sqs:us-east-1:653332051596:service2-queue"
                   ]
                 }
               ]
@@ -143,7 +168,7 @@
           "Fn::Join": [
             "-",
             [
-              "serverless-service2-test",
+              "serverless-service2-api",
               "dev",
               {
                 "Ref": "AWS::Region"
@@ -161,13 +186,18 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-service2-test/dev/1616748060396-2021-03-26T08:41:00.396Z/serverless-service2-test.zip"
+          "S3Key": "serverless/serverless-service2-api/dev/1617015988097-2021-03-29T11:06:28.097Z/serverless-service2-api.zip"
         },
         "Handler": "handler.consumeQueueMessage",
         "Runtime": "nodejs12.x",
-        "FunctionName": "serverless-service2-test-dev-consumeQueueMessage",
+        "FunctionName": "serverless-service2-api-dev-consumeQueueMessage",
         "MemorySize": 1024,
         "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "tableName": "db-service-2"
+          }
+        },
         "Role": {
           "Fn::GetAtt": [
             "IamRoleLambdaExecution",
@@ -179,14 +209,31 @@
         "ConsumeQueueMessageLogGroup"
       ]
     },
-    "ConsumeQueueMessageLambdaVersion9AHWonpUMJfDN4YnIrqg9ihBHa2BGSEGOAK7x8Jnc": {
+    "ConsumeQueueMessageLambdaVersionQK7hhIyDHyEw5Rc8kXX4IrVQnrTTIohrvuIvZUns": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ConsumeQueueMessageLambdaFunction"
         },
-        "CodeSha256": "Jr4mKuPWeVufnmzayDp0xy6XWJrQYOvA6rsrmHqzzEQ="
+        "CodeSha256": "w4Z4uSKdGnqijsxQu5vRgA00PyjC8wYXzsbzoGHHlc8="
+      }
+    },
+    "ConsumeQueueMessageEventSourceMappingSQSService2queue": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "DependsOn": [
+        "IamRoleLambdaExecution"
+      ],
+      "Properties": {
+        "BatchSize": 10,
+        "EventSourceArn": "arn:aws:sqs:us-east-1:653332051596:service2-queue",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ConsumeQueueMessageLambdaFunction",
+            "Arn"
+          ]
+        },
+        "Enabled": true
       }
     }
   },
@@ -199,7 +246,7 @@
     "ConsumeQueueMessageLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ConsumeQueueMessageLambdaVersion9AHWonpUMJfDN4YnIrqg9ihBHa2BGSEGOAK7x8Jnc"
+        "Ref": "ConsumeQueueMessageLambdaVersionQK7hhIyDHyEw5Rc8kXX4IrVQnrTTIohrvuIvZUns"
       }
     }
   }

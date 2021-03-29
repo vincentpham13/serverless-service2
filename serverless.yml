@@ -11,25 +11,39 @@
 #
 # Happy Coding!
 
-service: serverless-service2-test
+service: serverless-service2-api
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
-frameworkVersion: '2'
+frameworkVersion: "2"
+
+custom:
+  infrastructure: ${file(infrastructure/.build/stack.yaml)}
 
 provider:
   name: aws
   runtime: nodejs12.x
   lambdaHashingVersion: 20201221
 
-# you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
+  # you can overwrite defaults here
+  #  stage: dev
+  #  region: us-east-1
 
-# you can add statements to the Lambda function's IAM Role here
+  # you can add statements to the Lambda function's IAM Role here
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - ssm:GetParameter
+          Resource: 'arn:aws:ssm:us-east-1:653332051596:parameter/*'
+        - Effect: Allow
+          Action:
+            - sns:Subscribe
+          Resource: ${ssm:Service1TopicArn}
 #  iamRoleStatements:
 #    - Effect: "Allow"
 #      Action:
@@ -59,8 +73,17 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
+  subscribeToSNS:
+    handler: handler.subscribeToSNS
+      events:
+        sns:
+          arn: 
   consumeQueueMessage:
     handler: handler.consumeQueueMessage
+    events:
+      - sqs: ${self:custom.infrastructure.Service2QueueArn}
+    environment:
+      tableName: ${self:custom.infrastructure.Service2TableName}
     # iamRoleStatementsName: lambda-dynamodb-role
 #      - websocket: $connect
 #      - s3: ${env:BUCKET}

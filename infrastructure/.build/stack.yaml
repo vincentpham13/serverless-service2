@@ -1,0 +1,5 @@
+Service2QueueArn: 'arn:aws:sqs:us-east-1:653332051596:service2-queue'
+Service2TableName: db-service-2
+Service2TableArn: 'arn:aws:dynamodb:us-east-1:653332051596:table/db-service-2'
+Service2TableStreamArn: 'arn:aws:dynamodb:us-east-1:653332051596:table/db-service-2/stream/2021-03-29T10:57:42.520'
+ServerlessDeploymentBucketName: serverless-service2-infr-serverlessdeploymentbuck-2ckky0ky9uzg
