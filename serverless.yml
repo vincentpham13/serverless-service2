@@ -75,9 +75,9 @@ provider:
 functions:
   subscribeToSNS:
     handler: handler.subscribeToSNS
-      events:
-        sns:
-          arn: 
+      # events:
+      #   sns:
+      #     arn: 
   consumeQueueMessage:
     handler: handler.consumeQueueMessage
     events:
